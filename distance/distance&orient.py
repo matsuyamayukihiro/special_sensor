@@ -70,36 +70,32 @@ while True:
         print("distance2 ", distance2, "mm")
         print("    distanceR ", distance2, "mm")
 
+        ##################
+        # 受信側プログラム#
+        ##################
+
+        # 受信側アドレスの設定
+        # 受信側IP
+        SrcIP = "127.0.0.1"
+        # 受信側ポート番号
+        SrcPort = 22222
+        # 受信側アドレスをtupleに格納
+        SrcAddr = (SrcIP, SrcPort)
+        # バッファサイズ指定
+        BUFSIZE = 1024
+
+        # ソケット作成
+        udpServSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # 受信側アドレスでソケットを設定
+        udpServSock.bind(SrcAddr)
+
+        # While文を使用して常に受信待ちのループを実行
+        while True:
+            # ソケットにデータを受信した場合の処理
+            # 受信データを変数に設定
+            data, addr = udpServSock.recvfrom(BUFSIZE)
+            # 受信データと送信アドレスを出力
+            print(data.decode(), "    distanceR ", distance1, "mm", "    distanceL ", distance2, "mm")
     except KeyboardInterrupt:  # Ctrl+Cキーが押された
         GPIO.cleanup()  # GPIOをクリーンアップ
         sys.exit()
-
-##################
-# 受信側プログラム#
-##################
-
-# 受信側アドレスの設定
-# 受信側IP
-#  SrcIP = "127.0.0.1"
-# 受信側ポート番号
-#  SrcPort = 22222
-# 受信側アドレスをtupleに格納
-#  SrcAddr = (SrcIP, SrcPort)
-# バッファサイズ指定
-# BUFSIZE = 1024
-
-# ソケット作成
-#  udpServSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# 受信側アドレスでソケットを設定
-#   udpServSock.bind(SrcAddr)
-
-# While文を使用して常に受信待ちのループを実行
-#    while True:
-# ソケットにデータを受信した場合の処理
-# 受信データを変数に設定
-#  data, addr = udpServSock.recvfrom(BUFSIZE)
-# 受信データと送信アドレスを出力
-#            print(data.decode(),"    distanceR ",distance1,"mm","    distanceL ",distance2,"mm")
-#   except KeyboardInterrupt:       #Ctrl+Cキーが押された
-#          GPIO.cleanup()              #GPIOをクリーンアップ
-#         sys.exit()
