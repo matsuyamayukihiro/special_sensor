@@ -1,4 +1,5 @@
 # First import the library
+from socket import socket
 import pyrealsense2 as rs
 import numpy as np
 import cv2
@@ -147,7 +148,7 @@ try:
         depth_gry_L = cv2.resize(depth_colormap_L, dsize=(w, h))
 
         # ぼかし加工。
-        for i in range(4):
+        for i in range(2):
             average_square_size = 10  # ぼかしパラメータ 大きくする程にぼけていくdef=15
             sigma_color = 5000  # 色空間に関する標準偏差パラメータ  大きくすると色の平滑化範囲を広げるdef=5000
             sigma_metric = 1  # 距離空間に関する標準偏差パラメータ  大きくすると色の平滑化範囲を広げる (d==0の時のみ有効)
@@ -160,7 +161,7 @@ try:
             hsv_img_L = cv2.cvtColor(img_bilateral_L, cv2.COLOR_BGR2HSV)  # HSVモデルに変更
             img_gly_L = cv2.cvtColor(dst_L, cv2.COLOR_BGR2GRAY)  # グレースケール
 
-        # Remove background - Set pixels further than clipping_distance to grey
+        # 設定以上の段差検知すると、その部分を白塗する
         white_color = 255  # RGBでの白色
         depth_image_2d_R = np.dstack((dst_depth_R, dst_depth_R, dst_depth_R))  # 配列同士を奥行きで重ねる。RGBに対してdepth情報追加
         bg_removed_R = np.where((depth_image_2d_R > clipping_distance) | (depth_image_2d_R < 0), depth_gry_R, hsv_img_R)  # 引数1
@@ -238,6 +239,35 @@ try:
         cv2.imwrite('./AIdata002/' + write_file_name1_R, img_gly_R)
         cv2.imwrite('./AIdata002/' + write_file_name_L, dst_L)
         cv2.imwrite('./AIdata002/' + write_file_name1_L, img_gly_L)
+
+
+##################
+# 送信側プログラム(ローカル用)#
+##################
+
+        # 送信側アドレスの設定
+        SrcIP = "127.0.0.1"
+        #      送信側IP
+        SrcPort = 11111  # 送信側ポート番号
+        SrcAddr = (SrcIP, SrcPort)  # 送信側アドレスをtupleに格納
+
+        # 受信側アドレスの設定
+        DstIP = "127.0.0.1"
+        # 受信側IP
+        DstPort = 22222  # 受信側ポート番号
+        DstAddr = (DstIP, DstPort)  # 受信側アドレスをtupleに格納
+
+        # ソケット作成
+        udpClntSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # 引数1 IPv4用 or IPv6用か   引数2 TCP用 or UDP用か
+        udpClntSock.bind(SrcAddr)  # 送信側アドレスでソケットを設定
+
+        # バイナリに変換
+        data = data.encode('utf-8')
+
+        # 受信側アドレスに送信
+        udpClntSock.sendto(data, DstAddr)
+
+    # Stop streaming
         key = cv2.waitKey(5)
         # Press esc or 'q' to close the image window
         if key & 0xFF == ord('q') or key == 27:

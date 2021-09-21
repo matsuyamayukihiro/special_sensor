@@ -83,8 +83,7 @@ try:
         img_bilateralL = cv2.bilateralFilter(dstL, average_square_size, sigma_color, sigma_metric)  # Bilateralオペレータを使用して平滑化
 
         hsv_imgR = cv2.cvtColor(img_bilateralR, cv2.COLOR_BGR2HSV)  # HSVモデルに変更
-        hsv_imgL = cv2.cvtColor(img_bilateralL
-                                , cv2.COLOR_BGR2HSV)  # HSVモデルに変更
+        hsv_imgL = cv2.cvtColor(img_bilateralL, cv2.COLOR_BGR2HSV)  # HSVモデルに変更
 
         # 2値処理
         lower = (0, 7, 140)  # 色相は赤→黄→緑→水色→青→紫でループする
@@ -132,19 +131,19 @@ try:
         # 総合判定
         if dataL == 11 or dataR == 11:
             print("停止")
-            data = ('停止する')
+            data = '停止する'
 
         elif dataL == 22 or dataR == 22:  # 引数1 y座標  引数2 x座標
             print("左に行く")
-            data = ('左に行く')
+            data = '左に行く'
 
         elif dataL == 33 or dataR == 33:  # 左判定ゾーンで監視
             print("右")
-            data = ('右に行く')
+            data = '右に行く'
 
         else:
             print("直進")
-            data = ('直進する')
+            data = '直進する'
 
         # Show images
         cv2.namedWindow('RealSenseR', cv2.WINDOW_AUTOSIZE)
@@ -205,7 +204,5 @@ try:
         udpClntSock.sendto(data, DstAddr)
 
 finally:
-
     # Stop streaming
     pipeline.stop()
-
